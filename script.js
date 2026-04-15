@@ -178,54 +178,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { passive: true });
     }
 
-    // --- Mobile Slideshow for UI Mockups (Bidirectional Endless Loop) ---
+    // --- Mobile Slideshow for UI Mockups (Manual Swipe with Pagination Dots) ---
     const mockupContainer = document.querySelector('.ui-mockups');
     const mockupCards = document.querySelectorAll('.ui-mockups .mockup-card');
-    const dots = document.querySelectorAll('.dot');
+    const dots = document.querySelectorAll('.slideshow-dots .dot');
 
-    if (mockupContainer && mockupCards.length > 0) {
-        // Clone last mockup to start and first mockup to end for seamless bidirectional loop
-        const firstClone = mockupCards[0].cloneNode(true);
-        const lastClone = mockupCards[mockupCards.length - 1].cloneNode(true);
-        mockupContainer.insertBefore(lastClone, mockupCards[0]);
-        mockupContainer.appendChild(firstClone);
-
-        const totalOriginals = mockupCards.length;
-        let mockupIndex = 1; // Start at the first original card (index 1 because of lastClone)
-
-        // Initialize position to skip the first clone
-        setTimeout(() => {
-            mockupContainer.scrollTo({ left: window.innerWidth, behavior: 'auto' });
-        }, 100);
-
+    if (mockupContainer && mockupCards.length > 0 && dots.length > 0) {
         function updateDots(index) {
-            if (!dots.length) return;
-            // Map index (1 to totalOriginals) to dot index (0 to totalOriginals-1)
-            let dotIndex = (index - 1 + totalOriginals) % totalOriginals;
             dots.forEach((dot, i) => {
-                dot.classList.toggle('active', i === dotIndex);
+                dot.classList.toggle('active', i === index);
             });
         }
 
-        // Manual Swipe Handling & Loop Jump
+        // Initialize first dot
+        updateDots(0);
+
+        // Manual Swipe Handling
         mockupContainer.addEventListener('scroll', () => {
             if (window.innerWidth <= 768) {
                 const scrollLeft = mockupContainer.scrollLeft;
-                const newIndex = Math.round(scrollLeft / window.innerWidth);
+                const containerWidth = mockupContainer.clientWidth;
+                // Simple calculation based on current scroll position
+                let activeIndex = Math.round(scrollLeft / containerWidth);
                 
-                // Infinite Loop Jump for manual swipe
-                if (scrollLeft <= 0) {
-                    // Jump to last original card
-                    mockupContainer.scrollTo({ left: totalOriginals * window.innerWidth, behavior: 'auto' });
-                    mockupIndex = totalOriginals;
-                } else if (scrollLeft >= (totalOriginals + 1) * window.innerWidth) {
-                    // Jump to first original card
-                    mockupContainer.scrollTo({ left: window.innerWidth, behavior: 'auto' });
-                    mockupIndex = 1;
-                } else {
-                    mockupIndex = newIndex;
-                }
-                updateDots(mockupIndex);
+                // Safety bound checking
+                if (activeIndex < 0) activeIndex = 0;
+                if (activeIndex >= dots.length) activeIndex = dots.length - 1;
+                
+                updateDots(activeIndex);
             }
         });
     }

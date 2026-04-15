@@ -60,11 +60,40 @@ main {
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: 0;
-    /* Lives explicitly on the base stacking layer */
+    z-index: -1;
     overflow: hidden;
     pointer-events: none;
     background-color: var(--bg-color);
+}
+
+.vapor-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    background-image:
+        linear-gradient(rgba(255, 168, 0, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 168, 0, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridDrift 60s linear infinite;
+    z-index: 1;
+}
+
+@keyframes gridDrift {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    100% {
+        transform: translate(-50px, -50px);
+    }
+}
+
+.light-mode .vapor-grid {
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
 }
 
 .vapor-noise {
@@ -81,36 +110,66 @@ main {
 
 .vapor-blob {
     position: absolute;
-    top: 0;
-    left: 0;
     border-radius: 50%;
     filter: blur(140px);
     mix-blend-mode: screen;
-    /* Fuses the blobs additively inside the container */
     will-change: transform;
-    opacity: 0.8;
+    opacity: 0.5;
+    animation: blobMorph 20s ease-in-out infinite alternate;
 }
 
-/* Base yellow/orange blend gradients */
+@keyframes blobMorph {
+    0% {
+        transform: translate(0, 0) scale(1) rotate(0deg);
+    }
+
+    33% {
+        transform: translate(10%, 10%) scale(1.1) rotate(10deg);
+    }
+
+    66% {
+        transform: translate(-5%, 15%) scale(0.9) rotate(-10deg);
+    }
+
+    100% {
+        transform: translate(5%, -5%) scale(1) rotate(5deg);
+    }
+}
+
+.light-mode .vapor-blob {
+    opacity: 0.15;
+    mix-blend-mode: multiply;
+    filter: blur(180px);
+}
+
+/* Individual Blob Positions & Animations */
 .blob-1 {
     background: radial-gradient(circle, #ffa800 0%, #ff8a00 60%, transparent 80%);
-    width: 600px;
-    height: 500px;
-    /* Slight oval configuration for shape morphing */
+    width: 800px;
+    height: 700px;
+    top: -10%;
+    left: -10%;
+    animation-duration: 25s;
 }
 
 .blob-2 {
-    /* Angular conic mapping for complexity */
-    background: conic-gradient(from 90deg, transparent 0%, #ffc000 30%, #ffa800 50%, transparent 80%);
-    width: 450px;
-    height: 500px;
+    background: radial-gradient(circle, #ffc000 0%, #ffa800 60%, transparent 80%);
+    width: 600px;
+    height: 600px;
+    bottom: -10%;
+    right: -10%;
+    animation-duration: 30s;
+    animation-delay: -5s;
 }
 
 .blob-3 {
-    /* Offset radial point for structural elasticity */
-    background: radial-gradient(circle at 70% 70%, #ff8a00 0%, #ffa800 50%, transparent 80%);
-    width: 400px;
-    height: 450px;
+    background: radial-gradient(circle, #ff8a00 0%, #ffa800 60%, transparent 80%);
+    width: 500px;
+    height: 500px;
+    top: 40%;
+    left: 40%;
+    animation-duration: 35s;
+    animation-delay: -10s;
 }
 
 
@@ -308,7 +367,8 @@ html.light-mode .toggle-track {
 }
 
 .hero-mobile-banner {
-    display: none; /* Hidden on desktop */
+    display: none;
+    /* Hidden on desktop */
     width: 100%;
     height: auto;
     object-fit: contain;
@@ -316,7 +376,10 @@ html.light-mode .toggle-track {
 
 /* --- Theme Visibility Logic --- */
 /* Hide all banners by default */
-.dark-banner, .light-banner, .dark-banner-mobile, .light-banner-mobile {
+.dark-banner,
+.light-banner,
+.dark-banner-mobile,
+.light-banner-mobile {
     display: none;
 }
 
@@ -326,8 +389,13 @@ html:not(.light-mode) .dark-banner {
 }
 
 @media (max-width: 768px) {
-    html:not(.light-mode) .dark-banner { display: none !important; }
-    html:not(.light-mode) .dark-banner-mobile { display: block; }
+    html:not(.light-mode) .dark-banner {
+        display: none !important;
+    }
+
+    html:not(.light-mode) .dark-banner-mobile {
+        display: block;
+    }
 }
 
 /* Light Mode */
@@ -336,8 +404,13 @@ html.light-mode .light-banner {
 }
 
 @media (max-width: 768px) {
-    html.light-mode .light-banner { display: none !important; }
-    html.light-mode .light-banner-mobile { display: block; }
+    html.light-mode .light-banner {
+        display: none !important;
+    }
+
+    html.light-mode .light-banner-mobile {
+        display: block;
+    }
 }
 
 
@@ -398,7 +471,8 @@ html.light-mode .light-banner {
     width: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden; /* Hide overflow for the loop */
+    overflow: hidden;
+    /* Hide overflow for the loop */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -406,7 +480,8 @@ html.light-mode .light-banner {
 
 .skills-track {
     display: flex;
-    gap: 4rem; /* Consistent spacing between items */
+    gap: 4rem;
+    /* Consistent spacing between items */
     width: max-content;
     animation: scrollRight 25s linear infinite;
 }
@@ -419,7 +494,8 @@ html.light-mode .light-banner {
     font-weight: 600;
     color: #0A0A0A;
     font-size: 1.2rem;
-    white-space: nowrap; /* Prevent text wrapping */
+    white-space: nowrap;
+    /* Prevent text wrapping */
 }
 
 /* Loop Animation - Desktop & Mobile */
@@ -427,6 +503,7 @@ html.light-mode .light-banner {
     0% {
         transform: translateX(-33.333%);
     }
+
     100% {
         transform: translateX(0%);
     }
@@ -439,7 +516,8 @@ html.light-mode .light-banner {
 
 /* --- Projects Section --- */
 .projects-section {
-    padding: 2rem 4rem 6rem 4rem; /* Reduced top padding since intro provides it */
+    padding: 2rem 4rem 6rem 4rem;
+    /* Reduced top padding since intro provides it */
     max-width: 1400px;
     margin: 0 auto;
     display: flex;
@@ -504,12 +582,6 @@ html.light-mode .light-banner {
     display: none;
 }
 
-/* Hide clones on desktop */
-.ui-mockups .mockup-card:first-child,
-.ui-mockups .mockup-card:last-child {
-    display: none;
-}
-
 /* Mobile Slideshow for UI Mockups */
 @media (max-width: 768px) {
     .ui-mockups {
@@ -534,25 +606,31 @@ html.light-mode .light-banner {
     }
 
     .slideshow-dots {
-        display: flex;
+        display: flex !important;
         justify-content: center;
         gap: 0.8rem;
-        margin-top: 1rem;
+        margin-top: 0.1rem;
+        /* Closer to images */
         margin-bottom: 2rem;
+        z-index: 100;
+        position: relative;
     }
 
     .dot {
-        width: 8px;
-        height: 8px;
+        width: 9px;
+        /* Reduced by 10% */
+        height: 9px;
         border-radius: 50%;
         background-color: var(--accent-yellow);
         opacity: 0.3;
-        transition: opacity 0.3s ease, transform 0.3s ease;
+        transition: all 0.3s ease;
     }
 
     .dot.active {
         opacity: 1;
-        transform: scale(1.2);
+        transform: scale(1.3);
+        box-shadow: 0 0 10px var(--accent-yellow);
+        /* Added glow */
     }
 
     .ui-mockups .mockup-card {
@@ -704,8 +782,9 @@ html.light-mode .light-banner {
     flex-direction: column;
     justify-content: space-between;
     gap: 1.2rem;
-    aspect-ratio: 4 / 3.2; /* Fixed Shape for Cards */
-    box-shadow: 
+    aspect-ratio: 4 / 3.2;
+    /* Fixed Shape for Cards */
+    box-shadow:
         0 20px 50px rgba(0, 0, 0, 0.6),
         inset 0 1px 1px rgba(255, 255, 255, 0.1);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -721,12 +800,10 @@ html.light-mode .light-banner {
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(
-        45deg, 
-        transparent 45%, 
-        rgba(255, 255, 255, 0.05) 50%, 
-        transparent 55%
-    );
+    background: linear-gradient(45deg,
+            transparent 45%,
+            rgba(255, 255, 255, 0.05) 50%,
+            transparent 55%);
     transform: rotate(30deg);
     pointer-events: none;
     transition: transform 0.6s ease;
@@ -743,7 +820,8 @@ html.light-mode .light-banner {
 
 .gallery-image-wrapper {
     width: 100%;
-    height: 80%; /* Takes up most of the fixed shape */
+    height: 80%;
+    /* Takes up most of the fixed shape */
     border-radius: 8px;
     overflow: hidden;
     background-color: #1a1a1a;
@@ -774,7 +852,7 @@ html.light-mode .light-banner {
 .light-mode .gallery-card {
     background: linear-gradient(145deg, #ffffff 0%, #f5f5f5 100%);
     border: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 
+    box-shadow:
         0 10px 30px rgba(0, 0, 0, 0.05),
         inset 0 1px 1px rgba(255, 255, 255, 1);
 }
@@ -784,12 +862,10 @@ html.light-mode .light-banner {
 }
 
 .light-mode .gallery-card::after {
-    background: linear-gradient(
-        45deg, 
-        transparent 45%, 
-        rgba(0, 0, 0, 0.03) 50%, 
-        transparent 55%
-    );
+    background: linear-gradient(45deg,
+            transparent 45%,
+            rgba(0, 0, 0, 0.03) 50%,
+            transparent 55%);
 }
 
 /* --- Contact Section --- */
@@ -1036,9 +1112,11 @@ html.light-mode .light-banner {
 .close-modal:hover {
     color: var(--accent-yellow);
 }
+
 /* --- Floating Mobile Navigation Pill --- */
 .mobile-nav-pill {
-    display: none; /* Hidden by default */
+    display: none;
+    /* Hidden by default */
     position: fixed;
     bottom: 30px;
     left: 50%;
